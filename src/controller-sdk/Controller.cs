@@ -8,22 +8,26 @@ namespace controller_sdk
 {
 	public class Controller<T> where T : BaseCRD
 	{
-		public Func<T, Task> OnAdded { get; set; }
-		public Func<T, Task> OnDeleted { get; set; }
-		public Func<T, Task> OnUpdated { get; set; }
-
+		private readonly OperationHandler<T> m_handler;
 		private readonly Kubernetes m_kubernetes;
 		private readonly T m_crd;
 		private Watcher<T> m_watcher;
-		public Controller(Kubernetes kubernetes, T crd)
+
+		public Controller(T crd, OperationHandler<T> handler)
 		{
-			m_kubernetes = kubernetes;
+			m_kubernetes = new Kubernetes(KubernetesClientConfiguration.BuildConfigFromConfigFile());
 			m_crd = crd;
+			m_handler = handler;
 		}
 
-		public Task SatrtAsync(CancellationToken token)
+		~Controller()
 		{
-			var listResponse = m_kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(m_crd.Group, m_crd.Version, "", m_crd.Plural, watch: true);
+			DisposeWatcher();
+		}
+
+		public Task SatrtAsync(CancellationToken token, string @namespace = "")
+		{
+			var listResponse = m_kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(m_crd.Group, m_crd.Version, @namespace, m_crd.Plural, watch: true);
 
 			Task.Run(() =>
 			{
@@ -31,9 +35,18 @@ namespace controller_sdk
 				{
 					m_watcher = listResponse.Watch<T, object>(async (type, item) => await OnTChange(type, item));
 				}
+
+				DisposeWatcher();
+
 			});
 
 			return Task.CompletedTask;
+		}
+
+		void DisposeWatcher()
+		{
+			if (m_watcher != null && m_watcher.Watching)
+				m_watcher.Dispose();
 		}
 
 		private async Task OnTChange(WatchEventType type, T item)
@@ -43,16 +56,24 @@ namespace controller_sdk
 			switch (type)
 			{
 				case WatchEventType.Added:
-					if (OnAdded != null)
-						await OnAdded(item);
+					if (m_handler != null)
+						await m_handler.OnAdded(item);
 					return;
 				case WatchEventType.Modified:
-					if (OnUpdated != null)
-						await OnUpdated(item);
+					if (m_handler != null)
+						await m_handler.OnUpdated(item);
 					return;
 				case WatchEventType.Deleted:
-					if (OnDeleted != null)
-						await OnDeleted(item);
+					if (m_handler != null)
+						await m_handler.OnDeleted(item);
+					return;
+				case WatchEventType.Bookmark:
+					if (m_handler != null)
+						await m_handler.OnBookmarked(item);
+					return;
+				case WatchEventType.Error:
+					if (m_handler != null)
+						await m_handler.OnError(item);
 					return;
 				default:
 					Console.WriteLine($"Don't know what to do with {type}");

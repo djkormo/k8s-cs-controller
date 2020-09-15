@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\controller-sdk\controller-sdk.csproj" />
-    <ProjectReference Include="..\samples\foo\foo.csproj" />
+    <ProjectReference Include="..\..\controller-sdk\controller-sdk.csproj" />
+    <ProjectReference Include="..\..\samples\foo\foo.csproj" />
   </ItemGroup>
 
 </Project>
