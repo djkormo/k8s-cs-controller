@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
 
-namespace controller_sdk
+namespace K8sControllerSDK
 {
 	public class Controller<T> where T : BaseCRD
 	{
@@ -25,13 +25,13 @@ namespace controller_sdk
 			DisposeWatcher();
 		}
 
-		public Task SatrtAsync(CancellationToken token, string @namespace = "")
+		public Task SatrtAsync(CancellationToken token, string k8sNamespace = "")
 		{
-			var listResponse = m_kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(m_crd.Group, m_crd.Version, @namespace, m_crd.Plural, watch: true);
+			var listResponse = m_kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(m_crd.Group, m_crd.Version, k8sNamespace, m_crd.Plural, watch: true);
 
-			Task.Run(() =>
+			return Task.Run(() =>
 			{
-				while (!token.IsCancellationRequested)
+				//while (!token.IsCancellationRequested)
 				{
 					m_watcher = listResponse.Watch<T, object>(async (type, item) => await OnTChange(type, item));
 				}
@@ -40,7 +40,7 @@ namespace controller_sdk
 
 			});
 
-			return Task.CompletedTask;
+			//return Task.CompletedTask;
 		}
 
 		void DisposeWatcher()
@@ -57,7 +57,7 @@ namespace controller_sdk
 			{
 				case WatchEventType.Added:
 					if (m_handler != null)
-						await m_handler.OnAdded(item);
+						await m_handler.OnAdded(m_kubernetes, item);
 					return;
 				case WatchEventType.Modified:
 					if (m_handler != null)
@@ -65,7 +65,7 @@ namespace controller_sdk
 					return;
 				case WatchEventType.Deleted:
 					if (m_handler != null)
-						await m_handler.OnDeleted(item);
+						await m_handler.OnDeleted(m_kubernetes, item);
 					return;
 				case WatchEventType.Bookmark:
 					if (m_handler != null)

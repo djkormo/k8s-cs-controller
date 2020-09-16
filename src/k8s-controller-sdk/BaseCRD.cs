@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using k8s;
 using k8s.Models;
 
-namespace controller_sdk
+namespace K8sControllerSDK
 {
 	public abstract class BaseCRD : IMetadata<V1ObjectMeta>
 	{

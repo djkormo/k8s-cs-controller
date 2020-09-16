@@ -1,5 +1,5 @@
 ﻿using System;
-using controller_sdk;
+using K8sControllerSDK;
 
 namespace mssql_db
 {

@@ -3,4 +3,6 @@ kind: MSSQLDB
 metadata:
   name: db1
 spec:
-  dbname: "MyFirstDB"
+  dbname: MyFirstDB
+  config: mssql-config
+  data: mssql-data 
