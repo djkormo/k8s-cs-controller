@@ -30,5 +30,5 @@ jobs:
     - name: Publish
       env: 
         nuget_apikey: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push .\bin\Kubernetes.Controller.SDK.1.0.0.nupkg -k $nuget_apikey -s $nugetServer
+      run: dotnet nuget push ./bin/*.nupkg -k $nuget_apikey -s $nugetServer
  
