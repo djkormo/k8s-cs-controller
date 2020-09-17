@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  config: Release
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Install dependencies
+      run: dotnet restore  src/k8s-controller-sdk/k8s-controller-sdk.csproj
+    - name: Build
+      run: dotnet build --configuration $config --no-restore  src/k8s-controller-sdk/k8s-controller-sdk.csproj
+    - name: Package
+      run: dotnet pack --configuration $config --no-build  --output ./bin src/k8s-controller-sdk/k8s-controller-sdk.csproj
