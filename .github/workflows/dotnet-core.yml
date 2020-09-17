@@ -28,5 +28,7 @@ jobs:
     - name: Package
       run: dotnet pack --configuration $config --no-build  --output ./bin src/k8s-controller-sdk/k8s-controller-sdk.csproj
     - name: Publish
-      run: dotnet nuget push .\bin\Kubernetes.Controller.SDK.1.0.0.nupkg -k ${{secrets.NUGET_API_KEY}} -s $nugetServer
+      env: 
+        nuget_apikey: ${{ secrets.NUGET_API_KEY }}
+      run: dotnet nuget push .\bin\Kubernetes.Controller.SDK.1.0.0.nupkg -k $nuget_apikey -s $nugetServer
  
