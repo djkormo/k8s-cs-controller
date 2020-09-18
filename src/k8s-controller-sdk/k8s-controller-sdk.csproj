@@ -5,9 +5,22 @@
     <RootNamespace>K8sControllerSDK</RootNamespace>
 	  
     <PackageId>Kubernetes.Controller.SDK</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
+
+    <ApplicationIcon></ApplicationIcon>
     <Authors>Sebastián Gómez</Authors>
-    <Company>Container Solutions</Company>
+    <Company></Company>
+    <Description>Create Kubernetes controllers in .NET</Description>
+    <Copyright></Copyright>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/sebagomez/k8s-cs-controller</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>kubernetes,k8s,C#,.net</PackageTags>
+    <PackageIcon>https://github.com/sebagomez/k8s-cs-controller/blob/master/res/K8sControllerSDK.png?raw=true</PackageIcon>
+    <RepositoryUrl>https://github.com/sebagomez/k8s-cs-controller</RepositoryUrl>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageReleaseNotes></PackageReleaseNotes>
+
   </PropertyGroup>
 
   <ItemGroup>
