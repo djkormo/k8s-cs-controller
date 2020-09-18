@@ -13,11 +13,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Kubernetes.Controller.SDK" Version="0.0.2" Condition="'$(BuildingInsideVisualStudio)' != 'true'"/>
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\k8s-controller-sdk\k8s-controller-sdk.csproj" />
+	  <ProjectReference Include="..\..\k8s-controller-sdk\k8s-controller-sdk.csproj" Condition="'$(BuildingInsideVisualStudio)' == 'true'"/>
 	</ItemGroup>
 
 </Project>

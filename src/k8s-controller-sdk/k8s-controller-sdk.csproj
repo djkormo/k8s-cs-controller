@@ -5,7 +5,7 @@
     <RootNamespace>K8sControllerSDK</RootNamespace>
 	  
     <PackageId>Kubernetes.Controller.SDK</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
 
     <ApplicationIcon></ApplicationIcon>
     <Authors>Sebastián Gómez</Authors>
@@ -16,7 +16,7 @@
     <PackageProjectUrl>https://github.com/sebagomez/k8s-cs-controller</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>kubernetes,k8s,C#,.net</PackageTags>
-    <PackageIcon>https://github.com/sebagomez/k8s-cs-controller/blob/master/res/K8sControllerSDK.png?raw=true</PackageIcon>
+    <PackageIcon>K8sControllerSDK.png</PackageIcon>
     <RepositoryUrl>https://github.com/sebagomez/k8s-cs-controller</RepositoryUrl>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageReleaseNotes></PackageReleaseNotes>
@@ -25,6 +25,10 @@
 
   <ItemGroup>
     <PackageReference Include="KubernetesClient" Version="2.0.29" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../res/K8sControllerSDK.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>

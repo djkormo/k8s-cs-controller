@@ -3,12 +3,15 @@ name: Build
 on:
   push:
     branches: [ master ]
+    paths:
+      - .github/workflows/dotnet-core.yml
+      - src/
   pull_request:
     branches: [ master ]
 
 env:
   config: Release
-  nugetServer: https://api.nuget.org/v3/index.json
+  solutionFile: .\src\k8s-cs-controller.sln
 
 jobs:
   build:
@@ -22,13 +25,9 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      run: dotnet restore  src/k8s-controller-sdk/k8s-controller-sdk.csproj
+      run: dotnet restore $solutionFile
     - name: Build
-      run: dotnet build --configuration $config --no-restore  src/k8s-controller-sdk/k8s-controller-sdk.csproj
+      run: dotnet build --configuration $config --no-restore $solutionFile
     - name: Package
-      run: dotnet pack --configuration $config --no-build  --output ./bin src/k8s-controller-sdk/k8s-controller-sdk.csproj
-    - name: Publish
-      env: 
-        nuget_apikey: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push ./bin/*.nupkg -k $nuget_apikey -s $nugetServer
+      run: dotnet pack --configuration $config --no-build --output ./bin $solutionFile
  
