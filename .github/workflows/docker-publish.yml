@@ -22,7 +22,7 @@ jobs:
       with:
         username: sebagomez
         password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: k8s-mssql-db
-        tags: sebagomez/k8s-mssqldb
+        repository: sebagomez
+        tags: k8s-mssqldb
         path: ./src/samples/mssql-db
         push: true 
