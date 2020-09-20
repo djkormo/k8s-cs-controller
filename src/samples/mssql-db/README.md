@@ -1,3 +1,4 @@
+![Docker](https://github.com/sebagomez/k8s-cs-controller/workflows/Docker/badge.svg)
 ## Microsoft SQL Server Database operator
 
 ### Definition

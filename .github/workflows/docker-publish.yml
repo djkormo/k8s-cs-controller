@@ -6,8 +6,6 @@ on:
     paths:
       - .github/workflows/docker-publish.yml
       - src/samples/msssql-db/
-  pull_request:
-    branches: [ master ]
 
 env:
   config: Release
@@ -25,7 +23,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
-    - name: Install dependencies
+    - name: Docker Build
       run: |
         cd ./src/samples/mssql-db
         docker build -t sebagomez/k8s-mssqldb .
