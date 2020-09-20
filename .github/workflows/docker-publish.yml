@@ -27,5 +27,5 @@ jobs:
         dotnet-version: 3.1.301
     - name: Install dependencies
       run: |
-      cd ./src/samples/mssql-db
-      docker build -t sebagomez/k8s-mssqldb .
+        cd ./src/samples/mssql-db
+        docker build -t sebagomez/k8s-mssqldb .
