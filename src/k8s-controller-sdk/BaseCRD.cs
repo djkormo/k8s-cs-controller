@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using k8s;
+﻿using k8s;
 using k8s.Models;
 
 namespace K8sControllerSDK
@@ -24,8 +22,6 @@ namespace K8sControllerSDK
 		public string Status => Metadata.Annotations.ContainsKey(StatusAnnotationName) ? Metadata.Annotations[StatusAnnotationName] : null;
 		public string ApiVersion { get; set; }
 		public string Kind { get; set; }
-
 		public V1ObjectMeta Metadata { get; set; }
-
 	}
 }

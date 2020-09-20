@@ -5,7 +5,7 @@
     <RootNamespace>K8sControllerSDK</RootNamespace>
 	  
     <PackageId>Kubernetes.Controller.SDK</PackageId>
-    <Version>0.0.3</Version>
+    <Version>0.5.0</Version>
 
     <ApplicationIcon></ApplicationIcon>
     <Authors>Sebastián Gómez</Authors>
