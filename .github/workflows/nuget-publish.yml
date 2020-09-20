@@ -5,7 +5,7 @@ on:
     branches: [ master ]
     paths:
       - .github/workflows/nuget-publish.yml
-      - src/k8s-controller-sdk
+      - src/k8s-controller-sdk/
   pull_request:
     branches: [ master ]
 
