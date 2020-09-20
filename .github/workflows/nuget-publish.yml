@@ -4,8 +4,8 @@ on:
   push:
     branches: [ master ]
     paths:
-      - .github/workflows/nuget-publish.yml
-      - src/k8s-controller-sdk/
+    - .github/workflows/nuget-publish.yml
+    - src/k8s-controller-sdk/
 
 env:
   config: Release

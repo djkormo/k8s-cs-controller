@@ -4,8 +4,8 @@ on:
   push:
     branches: [ master ]
     paths:
-      - .github/workflows/docker-publish.yml
-      - src/samples/msssql-db/
+    - .github/workflows/docker-publish.yml
+    - src/samples/msssql-db/
 
 env:
   config: Release
