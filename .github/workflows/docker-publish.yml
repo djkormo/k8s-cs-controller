@@ -9,8 +9,6 @@ on:
 
 env:
   config: Release
-  nugetServer: https://api.nuget.org/v3/index.json
-  projectFile: src/samples/mssql-db/mssql-db.csproj
 
 jobs:
   build:
@@ -19,11 +17,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v1.1.1
       with:
-        dotnet-version: 3.1.301
-    - name: Docker Build
-      run: |
-        cd ./src/samples/mssql-db
-        docker build -t sebagomez/k8s-mssqldb .
+        username: sebagomez
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: k8s-mssql-db
+        tags: sebagomez/k8s-mssqldb
+        path: ./src/samples/mssql-db
+        push: true 
