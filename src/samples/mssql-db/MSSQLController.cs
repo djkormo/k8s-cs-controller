@@ -7,8 +7,10 @@ namespace mssql_db
 	{
 		static void Main(string[] args)
 		{
-			Controller<MSSQLDB> controller = new Controller<MSSQLDB>(new MSSQLDB(), new MSSQLDBOperationHandler());
+			MSSQLDBOperationHandler handler = new MSSQLDBOperationHandler();
+			Controller<MSSQLDB> controller = new Controller<MSSQLDB>(new MSSQLDB(), handler);
 			controller.SatrtAsync(new System.Threading.CancellationToken());
+			handler.CheckCurrentState(controller.Kubernetes);
 
 			Console.WriteLine("Press <enter> to quit...");
 			Console.ReadLine();
