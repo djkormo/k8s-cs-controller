@@ -115,7 +115,7 @@ namespace mssql_db
 
 								if (i == 0)
 								{
-									Console.WriteLine($"Database {db.Spec.DBName} was not found! 😱");
+									Console.WriteLine($"Database {db.Spec.DBName} was not found!");
 									CreateDB(k8s, db);
 								}
 							}

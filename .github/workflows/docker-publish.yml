@@ -1,0 +1,31 @@
+name: Docker
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - .github/workflows/docker-publish.yml
+      - src/samples/msssql-db/
+  pull_request:
+    branches: [ master ]
+
+env:
+  config: Release
+  nugetServer: https://api.nuget.org/v3/index.json
+  projectFile: src/samples/mssql-db/mssql-db.csproj
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Install dependencies
+      run: |
+      cd ./src/samples/mssql-db
+      docker build -t sebagomez/k8s-mssqldb .
