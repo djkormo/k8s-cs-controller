@@ -5,12 +5,13 @@ on:
     branches: [ master ]
     paths:
     - .github/workflows/dotnet-core.yml
-    - src/
+    - src/**
+
   pull_request:
     branches: [ master ]
     paths:
     - .github/workflows/dotnet-core.yml
-    - src/    
+    - src/**    
 
 env:
   config: Release
