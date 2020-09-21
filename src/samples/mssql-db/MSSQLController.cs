@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using K8sControllerSDK;
 
 namespace mssql_db
@@ -9,11 +9,10 @@ namespace mssql_db
 		{
 			MSSQLDBOperationHandler handler = new MSSQLDBOperationHandler();
 			Controller<MSSQLDB> controller = new Controller<MSSQLDB>(new MSSQLDB(), handler);
-			controller.SatrtAsync(new System.Threading.CancellationToken());
-			handler.CheckCurrentState(controller.Kubernetes);
+			Task t1 = controller.SatrtAsync(new System.Threading.CancellationToken());
+			Task t2 = handler.CheckCurrentState(controller.Kubernetes);
 
-			Console.WriteLine("Press <enter> to quit...");
-			Console.ReadLine();
+			Task.WaitAll(new Task[] { t1, t2 });
 		}
 	}
 }

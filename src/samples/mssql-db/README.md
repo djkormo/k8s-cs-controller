@@ -171,7 +171,7 @@ Also, in the log shown above, you'll notice some messages seem to have the same 
 
 ### Run it in your container (ACTUALLY, STILL NOT WORKING)
 
-This msqldb controller is also available as a Docker image you can use in your cluster. 
+This msqldb controller is also available as a Docker image in my personal Docker Hub repository under [sebagomez/k8s-mssqldb](https://hub.docker.com/repository/docker/sebagomez/k8s-mssqldb). 
 
 Spin a pod with the following command
 
