@@ -168,3 +168,12 @@ I then deleted the object, and the database was successfully created:
 I then created it again, and connected to the pod running the SQL Server and dropped the MyFirstDB database, thus, you see that `Database MyFirstDB was not found!` message.
 
 Also, in the log shown above, you'll notice some messages seem to have the same info, but they actually come from two sources. One from the controller engine itself (from inside the SDK) and some form my own MSSQLDB implementation.
+
+### Run it in your container (ACTUALLY, STILL NOT WORKING)
+
+This msqldb controller is also available as a Docker image you can use in your cluster. 
+
+Spin a pod with the following command
+
+`kubectl run mssqldb --image=sebagomez/k8s-mssqldb`
+

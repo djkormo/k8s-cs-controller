@@ -16,7 +16,17 @@ namespace K8sControllerSDK
 
 		public Controller(T crd, IOperationHandler<T> handler)
 		{
-			Kubernetes = new Kubernetes(KubernetesClientConfiguration.BuildConfigFromConfigFile());
+			KubernetesClientConfiguration config;
+			if (KubernetesClientConfiguration.IsInCluster())
+			{
+				config = KubernetesClientConfiguration.InClusterConfig();
+			}
+			else
+			{
+				config = KubernetesClientConfiguration.BuildConfigFromConfigFile();
+			}
+
+			Kubernetes = new Kubernetes(config);
 			m_crd = crd;
 			m_handler = handler;
 		}
