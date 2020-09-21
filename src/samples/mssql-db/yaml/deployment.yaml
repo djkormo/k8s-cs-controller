@@ -54,4 +54,5 @@ kind: ConfigMap
 metadata:
   name: mssql-config
 data:
-  instance: localhost,32727
+  instance: mssql-service
+#  instance: localhost,32727
