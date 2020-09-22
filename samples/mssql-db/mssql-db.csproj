@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\k8s-controller-sdk\k8s-controller-sdk.csproj" Condition="'$(BuildingInsideVisualStudio)' == 'true'"/>
+	  <ProjectReference Include="..\..\src\k8s-controller-sdk.csproj" Condition="'$(BuildingInsideVisualStudio)' == 'true'"/>
 	</ItemGroup>
 
 </Project>

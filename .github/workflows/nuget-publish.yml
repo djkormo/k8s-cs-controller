@@ -5,12 +5,12 @@ on:
     branches: [ master ]
     paths:
     - .github/workflows/nuget-publish.yml
-    - src/k8s-controller-sdk/**
+    - src/**
 
 env:
   config: Release
   nugetServer: https://api.nuget.org/v3/index.json
-  projectFile: src/k8s-controller-sdk/k8s-controller-sdk.csproj
+  projectFile: src/k8s-controller-sdk.csproj
 
 jobs:
   build:

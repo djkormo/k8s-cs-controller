@@ -6,6 +6,7 @@ on:
     paths:
     - .github/workflows/dotnet-core.yml
     - src/**
+    - smaples/**    
 
   pull_request:
     branches: [ master ]
