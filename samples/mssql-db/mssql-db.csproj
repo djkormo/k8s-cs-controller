@@ -13,7 +13,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Kubernetes.Controller.SDK" Version="0.5.3" Condition="'$(BuildingInsideVisualStudio)' != 'true'"/>
+		<PackageReference Include="Kubernetes.Controller.SDK" Version="0.5.4" Condition="'$(BuildingInsideVisualStudio)' != 'true'"/>
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
 	</ItemGroup>
 
