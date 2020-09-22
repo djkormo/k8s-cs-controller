@@ -1,18 +1,39 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 
 namespace K8sControllerSDK
 {
 	public class Controller<T> where T : BaseCRD
 	{
+		//log4net.Config.BasicConfigurator
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
 		public Kubernetes Kubernetes { get; private set; }
 
 		private readonly IOperationHandler<T> m_handler;
 		private readonly T m_crd;
 		private Watcher<T> m_watcher;
+
+		static Controller()
+		{
+			var config = new LoggingConfiguration();
+			var consoleTarget = new ColoredConsoleTarget
+			{
+				Name = "coloredConsole",
+				Layout = "${longdate}[${level:uppercase=true}]${logger}:${message}",
+			};
+			config.AddRule(LogLevel.Debug, LogLevel.Fatal, consoleTarget, "*");
+			LogManager.Configuration = config;
+			Log = LogManager.GetCurrentClassLogger();
+		}
 
 		public Controller(T crd, IOperationHandler<T> handler)
 		{
@@ -48,7 +69,6 @@ namespace K8sControllerSDK
 				}
 
 				DisposeWatcher();
-
 			});
 		}
 
@@ -60,8 +80,7 @@ namespace K8sControllerSDK
 
 		private async Task OnTChange(WatchEventType type, T item)
 		{
-			Console.WriteLine($"{typeof(T)} {item.Name()} {type} on Namespace {item.Namespace()}");
-
+			Log.Info($"{typeof(T)} {item.Name()} {type} on Namespace {item.Namespace()}");
 			switch (type)
 			{
 				case WatchEventType.Added:
@@ -85,7 +104,7 @@ namespace K8sControllerSDK
 						await m_handler.OnError(Kubernetes, item);
 					return;
 				default:
-					Console.WriteLine($"Don't know what to do with {type}");
+					Log.Warn($"Don't know what to do with {type}");
 					break;
 			};
 		}
