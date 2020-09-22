@@ -126,13 +126,34 @@ In my case it's a .NET Core console application where I start the controller. (I
 ```cs
 static void Main(string[] args)
 {
-	MSSQLDBOperationHandler handler = new MSSQLDBOperationHandler();
-	Controller<MSSQLDB> controller = new Controller<MSSQLDB>(new MSSQLDB(), handler);
-	controller.SatrtAsync(new System.Threading.CancellationToken());
-	handler.CheckCurrentState(controller.Kubernetes);
+	try
+	{
+		string k8sNamespace = "default";
+		if (args.Length > 1)
+			k8sNamespace = args[0];
 
-	Console.WriteLine("Press <enter> to quit...");
-	Console.ReadLine();
+		Controller<MSSQLDB>.ConfigLogger();
+
+		Log.Info($"=== {nameof(MSSQLController)} STARTING for namespace {k8sNamespace} ===");
+
+		MSSQLDBOperationHandler handler = new MSSQLDBOperationHandler();
+		Controller<MSSQLDB> controller = new Controller<MSSQLDB>(new MSSQLDB(), handler);
+		controller.SatrtAsync(k8sNamespace);
+		Task reconciliation = handler.CheckCurrentState(controller.Kubernetes);
+
+		Log.Info($"=== {nameof(MSSQLController)} STARTED ===");
+
+		reconciliation.ConfigureAwait(false).GetAwaiter().GetResult();
+
+	}
+	catch (Exception ex)
+	{
+		Log.Fatal(ex);
+	}
+	finally
+	{
+		Log.Warn($"=== {nameof(MSSQLController)} TERMINATING ===");
+	}
 }
 ```
 Here you can see that I first create the handler and pass it over to the controller instance. This `Controller` is given by the SDK and it's the one checking on the objects created by the kubernetes-apiserver. I then start the controller, the handler for the current state, and that's it!.
