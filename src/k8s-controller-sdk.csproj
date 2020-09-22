@@ -29,7 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="../../res/K8sControllerSDK.png" Pack="true" PackagePath="" />
+		<None Include="../res/K8sControllerSDK.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 
 </Project>
