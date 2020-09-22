@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{1EEF811E-01F7-4899-B334-0119F7256AED}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mssql-db", "samples\mssql-db\mssql-db.csproj", "{29F7BBC1-556D-4EE0-A0E9-4637CD950249}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "k8s-controller-sdk", "k8s-controller-sdk\k8s-controller-sdk.csproj", "{D803B06D-5407-4927-85C5-1580414030BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{A76C5C7D-D0E2-4761-90F7-B2FAABC3535C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mssql-db", "..\samples\mssql-db\mssql-db.csproj", "{074DC3CB-24DC-4576-BB8F-838CDA765A54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,20 +15,20 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{29F7BBC1-556D-4EE0-A0E9-4637CD950249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{29F7BBC1-556D-4EE0-A0E9-4637CD950249}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{29F7BBC1-556D-4EE0-A0E9-4637CD950249}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{29F7BBC1-556D-4EE0-A0E9-4637CD950249}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D803B06D-5407-4927-85C5-1580414030BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D803B06D-5407-4927-85C5-1580414030BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D803B06D-5407-4927-85C5-1580414030BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D803B06D-5407-4927-85C5-1580414030BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{074DC3CB-24DC-4576-BB8F-838CDA765A54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{074DC3CB-24DC-4576-BB8F-838CDA765A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{074DC3CB-24DC-4576-BB8F-838CDA765A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{074DC3CB-24DC-4576-BB8F-838CDA765A54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{29F7BBC1-556D-4EE0-A0E9-4637CD950249} = {1EEF811E-01F7-4899-B334-0119F7256AED}
+		{074DC3CB-24DC-4576-BB8F-838CDA765A54} = {A76C5C7D-D0E2-4761-90F7-B2FAABC3535C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {66F3E1DC-F9D7-4A41-8B85-64A67C95911E}

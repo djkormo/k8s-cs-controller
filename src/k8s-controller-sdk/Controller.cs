@@ -1,8 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
 using NLog;
@@ -13,7 +9,6 @@ namespace K8sControllerSDK
 {
 	public class Controller<T> where T : BaseCRD
 	{
-		//log4net.Config.BasicConfigurator
 		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
 		public Kubernetes Kubernetes { get; private set; }
@@ -24,15 +19,25 @@ namespace K8sControllerSDK
 
 		static Controller()
 		{
-			var config = new LoggingConfiguration();
-			var consoleTarget = new ColoredConsoleTarget
+			ConfigLogger();
+		}
+
+		static bool s_loggerConfiged = false;
+		public static void ConfigLogger()
+		{
+			if (!s_loggerConfiged)
 			{
-				Name = "coloredConsole",
-				Layout = "${longdate}[${level:uppercase=true}]${logger}:${message}",
-			};
-			config.AddRule(LogLevel.Debug, LogLevel.Fatal, consoleTarget, "*");
-			LogManager.Configuration = config;
-			Log = LogManager.GetCurrentClassLogger();
+				var config = new LoggingConfiguration();
+				var consoleTarget = new ColoredConsoleTarget
+				{
+					Name = "coloredConsole",
+					Layout = "${longdate} [${level:uppercase=true}] ${logger}:${message}",
+				};
+				config.AddRule(LogLevel.Debug, LogLevel.Fatal, consoleTarget, "*");
+				LogManager.Configuration = config;
+
+				s_loggerConfiged = true;
+			}
 		}
 
 		public Controller(T crd, IOperationHandler<T> handler)
@@ -57,19 +62,11 @@ namespace K8sControllerSDK
 			DisposeWatcher();
 		}
 
-		public Task SatrtAsync(CancellationToken token, string k8sNamespace = "")
+		public async void SatrtAsync(string k8sNamespace = "")
 		{
-			var listResponse = Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(m_crd.Group, m_crd.Version, k8sNamespace, m_crd.Plural, watch: true);
+			var listResponse = await Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(m_crd.Group, m_crd.Version, k8sNamespace, m_crd.Plural, watch: true);
 
-			return Task.Run(() =>
-			{
-				//while (!token.IsCancellationRequested)
-				{
-					m_watcher = listResponse.Watch<T, object>(async (type, item) => await OnTChange(type, item));
-				}
-
-				DisposeWatcher();
-			});
+			m_watcher = listResponse.Watch<T, object>(this.OnTChange, this.OnError);
 		}
 
 		void DisposeWatcher()
@@ -78,7 +75,7 @@ namespace K8sControllerSDK
 				m_watcher.Dispose();
 		}
 
-		private async Task OnTChange(WatchEventType type, T item)
+		private async void OnTChange(WatchEventType type, T item)
 		{
 			Log.Info($"{typeof(T)} {item.Name()} {type} on Namespace {item.Namespace()}");
 			switch (type)
@@ -107,6 +104,11 @@ namespace K8sControllerSDK
 					Log.Warn($"Don't know what to do with {type}");
 					break;
 			};
+		}
+
+		private void OnError(Exception exception)
+		{
+			Log.Fatal(exception);
 		}
 	}
 }
