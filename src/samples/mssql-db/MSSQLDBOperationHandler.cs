@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
 using K8sControllerSDK;
+using NLog;
 
 namespace mssql_db
 {
 	public class MSSQLDBOperationHandler : IOperationHandler<MSSQLDB>
 	{
 		HashSet<MSSQLDB> m_currentState = new HashSet<MSSQLDB>();
+
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
 		SqlConnection GetDBConnection(Kubernetes k8s, MSSQLDB db)
 		{
@@ -45,7 +48,7 @@ namespace mssql_db
 
 		public Task OnBookmarked(Kubernetes k8s, MSSQLDB crd)
 		{
-			Console.WriteLine($"DATABASE {crd.Spec.DBName} was BOOKMARKED");
+			Log.Warn($"DATABASE {crd.Spec.DBName} was BOOKMARKED");
 
 			return Task.CompletedTask;
 		}
@@ -54,7 +57,7 @@ namespace mssql_db
 		{
 			lock (m_currentState)
 			{
-				Console.WriteLine($"DATABASE {crd.Spec.DBName} will be DELETED!");
+				Log.Info($"DATABASE {crd.Spec.DBName} will be DELETED!");
 
 				using (SqlConnection connection = GetDBConnection(k8s, crd))
 				{
@@ -69,13 +72,21 @@ namespace mssql_db
 					{
 						if (sex.Number == 3701) //Already gone!
 						{
-							Console.WriteLine(sex.Message);
+							Log.Error(sex.Message);
 							return Task.CompletedTask;
 						}
+
+						Log.Error(sex.Message);
+						return Task.CompletedTask;
+					}
+					catch (Exception ex)
+					{
+						Log.Fatal(ex.Message);
+						return Task.CompletedTask;
 					}
 
 					m_currentState.Remove(crd);
-					Console.WriteLine($"DATABASE {crd.Spec.DBName} successfully deleted!");
+					Log.Info($"DATABASE {crd.Spec.DBName} successfully deleted!");
 
 				}
 
@@ -85,14 +96,14 @@ namespace mssql_db
 
 		public Task OnError(Kubernetes k8s, MSSQLDB crd)
 		{
-			Console.WriteLine($"ERROR on {crd.Spec.DBName}");
+			Log.Error($"ERROR on {crd.Spec.DBName}");
 
 			return Task.CompletedTask;
 		}
 
 		public Task OnUpdated(Kubernetes k8s, MSSQLDB crd)
 		{
-			Console.WriteLine($"DATABASE {crd.Spec.DBName} was UPDATED");
+			Log.Warn($"DATABASE {crd.Spec.DBName} was UPDATED");
 
 			return Task.CompletedTask;
 		}
@@ -111,12 +122,20 @@ namespace mssql_db
 							{
 								connection.Open();
 								SqlCommand queryCommand = new SqlCommand($"SELECT COUNT(*) FROM SYS.DATABASES WHERE NAME = '{db.Spec.DBName}';", connection);
-								int i = (int)queryCommand.ExecuteScalar();
 
-								if (i == 0)
+								try
 								{
-									Console.WriteLine($"Database {db.Spec.DBName} was not found!");
-									CreateDB(k8s, db);
+									int i = (int)queryCommand.ExecuteScalar();
+
+									if (i == 0)
+									{
+										Log.Warn($"Database {db.Spec.DBName} was not found!");
+										CreateDB(k8s, db);
+									}
+								}
+								catch (Exception ex)
+								{
+									Log.Error(ex.Message);
 								}
 							}
 						}
@@ -129,7 +148,7 @@ namespace mssql_db
 
 		void CreateDB(Kubernetes k8s, MSSQLDB db)
 		{
-			Console.WriteLine($"DATABASE {db.Spec.DBName} will be ADDED");
+			Log.Info($"DATABASE {db.Spec.DBName} will be ADDED");
 
 			using (SqlConnection connection = GetDBConnection(k8s, db))
 			{
@@ -144,14 +163,22 @@ namespace mssql_db
 				{
 					if (sex.Number == 1801) //Database already exists
 					{
-						Console.WriteLine(sex.Message);
+						Log.Warn(sex.Message);
 						m_currentState.Add(db);
 						return;
 					}
+
+					Log.Error(sex.Message);
+					return;
+				}
+				catch (Exception ex)
+				{
+					Log.Fatal(ex.Message);
+					return;
 				}
 
 				m_currentState.Add(db);
-				Console.WriteLine($"DATABASE {db.Spec.DBName} successfully created!");
+				Log.Info($"DATABASE {db.Spec.DBName} successfully created!");
 			}
 		}
 	}
