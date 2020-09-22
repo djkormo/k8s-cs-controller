@@ -12,6 +12,7 @@ on:
     paths:
     - .github/workflows/dotnet-core.yml
     - src/**    
+    - smaples/**    
 
 env:
   config: Release
