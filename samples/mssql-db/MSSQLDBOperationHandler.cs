@@ -105,12 +105,6 @@ namespace mssql_db
 
 			MSSQLDB currentDb = m_currentState[crd.Name()];
 
-			if (currentDb.Spec.Config != crd.Spec.Config || currentDb.Spec.Data != crd.Spec.Data)
-			{
-				Log.Error("Changes in Config or Data are not allowed at the moment. Please delete and create the dab with the new config values.");
-				return Task.CompletedTask;
-			}
-
 			if (currentDb.Spec.DBName != crd.Spec.DBName)
 			{
 				try
@@ -124,6 +118,8 @@ namespace mssql_db
 					Log.Fatal(ex);
 				}
 			}
+			else
+				m_currentState[crd.Name()] = crd;
 
 			return Task.CompletedTask;
 		}
