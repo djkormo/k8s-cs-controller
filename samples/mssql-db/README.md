@@ -178,7 +178,7 @@ DATABASE MyFirstDB will be ADDED
 DATABASE MyFirstDB successfully created!
 ```
 
-Here's the log of the execution. The first thing I did was created the first db running:
+Here's the log of the execution. The first thing I did was created the first db (all these yaml files are in the [yaml](./yaml) folder)
 
 `kubectl apply -f .\db1.yaml`
 

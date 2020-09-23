@@ -13,7 +13,7 @@ namespace mssql_db
 {
 	public class MSSQLDBOperationHandler : IOperationHandler<MSSQLDB>
 	{
-		HashSet<MSSQLDB> m_currentState = new HashSet<MSSQLDB>();
+		Dictionary<string,MSSQLDB> m_currentState = new Dictionary<string, MSSQLDB>();
 
 		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -46,7 +46,7 @@ namespace mssql_db
 
 		public Task OnBookmarked(Kubernetes k8s, MSSQLDB crd)
 		{
-			Log.Warn($"DATABASE {crd.Spec.DBName} was BOOKMARKED");
+			Log.Warn($"DATABASE {crd.Spec.DBName} was BOOKMARKED (???)");
 
 			return Task.CompletedTask;
 		}
@@ -83,7 +83,7 @@ namespace mssql_db
 						return Task.CompletedTask;
 					}
 
-					m_currentState.Remove(crd);
+					m_currentState.Remove(crd.Name());
 					Log.Info($"DATABASE {crd.Spec.DBName} successfully deleted!");
 
 				}
@@ -103,6 +103,28 @@ namespace mssql_db
 		{
 			Log.Warn($"DATABASE {crd.Spec.DBName} was UPDATED");
 
+			MSSQLDB currentDb = m_currentState[crd.Name()];
+
+			if (currentDb.Spec.Config != crd.Spec.Config || currentDb.Spec.Data != crd.Spec.Data)
+			{
+				Log.Error("Changes in Config or Data are not allowed at the moment. Please delete and create the dab with the new config values.");
+				return Task.CompletedTask;
+			}
+
+			if (currentDb.Spec.DBName != crd.Spec.DBName)
+			{
+				try
+				{
+					RenameDB(k8s, currentDb, crd);
+					Log.Info($"Database sucessfully renames from {currentDb.Spec.DBName} to {crd.Spec.DBName}");
+					m_currentState[crd.Name()] = crd;
+				}
+				catch (Exception ex)
+				{
+					Log.Fatal(ex);
+				}
+			}
+
 			return Task.CompletedTask;
 		}
 
@@ -114,7 +136,7 @@ namespace mssql_db
 				{
 					lock (m_currentState)
 					{
-						foreach (MSSQLDB db in m_currentState)
+						foreach (MSSQLDB db in m_currentState.Values)
 						{
 							using (SqlConnection connection = GetDBConnection(k8s, db))
 							{
@@ -162,7 +184,7 @@ namespace mssql_db
 					if (sex.Number == 1801) //Database already exists
 					{
 						Log.Warn(sex.Message);
-						m_currentState.Add(db);
+						m_currentState.Add(db.Name(), db);
 						return;
 					}
 
@@ -175,8 +197,22 @@ namespace mssql_db
 					return;
 				}
 
-				m_currentState.Add(db);
+				m_currentState.Add(db.Name(), db);
 				Log.Info($"DATABASE {db.Spec.DBName} successfully created!");
+			}
+		}
+
+		void RenameDB(Kubernetes k8s, MSSQLDB currentDB, MSSQLDB newDB)
+		{
+			string sqlCommand = @$"ALTER DATABASE {currentDB.Spec.DBName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+ALTER DATABASE {currentDB.Spec.DBName} MODIFY NAME = {newDB.Spec.DBName};
+ALTER DATABASE {newDB.Spec.DBName} SET MULTI_USER;";
+
+			using (SqlConnection connection = GetDBConnection(k8s, newDB))
+			{
+				connection.Open();
+				SqlCommand command = new SqlCommand(sqlCommand, connection);
+				command.ExecuteNonQuery();
 			}
 		}
 	}
