@@ -10,7 +10,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: mssqldbs.samples.k8s-cs-controller
-spec:
+spec:P
   group: samples.k8s-cs-controller
   version: v1
   subresources:
@@ -73,7 +73,7 @@ But nothing actually happens other than the API-Server saving the data in the cl
 
 #### Base class
 
-We need to create a class that represents our definition. For that purpose, the SDK provides a class called `BaseCRD` which is where your class will inherit from. Also, you must create a spec class that will hold the properties defined in your custom resource. In my case, this is what they look like.
+We need to create a class that represents our definition. For that purpose, the SDK provides a class called **`BaseCRD`** which is where your class will inherit from. Also, you must create a spec class that will hold the properties defined in your custom resource. In my case, this is what they look like.
 
 ```cs
 public class MSSQLDB : BaseCRD
@@ -97,7 +97,7 @@ public class MSSQLDBSpec
 
 Keep in mind the strings you must pass over the base class' constructor. These are the same values defined in the `CustomeResourceDefinition` file.
 
-Then you need to create the class that will be actually creating or deleting the databases. For this purpose, create a class that implements the `IOperationHAndler<T>`, where `T` is your implementation of the `BaseCRD`,  in my case `MSSQLDB`.
+Then you need to create the class that will be actually creating or deleting the databases. For this purpose, create a class that implements the **`IOperationHAndler<T>`**, where **`T`** is your implementation of the **`BaseCRD`**,  in my case **`MSSQLDB`**.
 
 ```cs
 public interface IOperationHandler<T> where T : BaseCRD
@@ -117,7 +117,7 @@ public interface IOperationHandler<T> where T : BaseCRD
 ```
 The implementation is pretty straight forward, you need to implement the **`OnAction`** methods. These methods are the ones that will communicate with the SQL Server instance and will create or delete the databases. So whenever somebody uses `kubectl` to create, apply or delete an object, these methods will be called.
 
-But what happens if somebody or something connects to your SQL Server instance and deletes the databases? Here's where the **`CheckCurrentState`** method comes into play. This method, in my case, is checking every 5 seconds if the MSSQLDB objects created in my cluster are actually created as databases in the SQL Server instance. If they are not, it will try to recreate them.
+But what happens if somebody or something connects to your SQL Server instance and deletes the databases? Here's where the **`CheckCurrentState`** method comes into play. This method, in my case, is checking every 5 seconds if the **`MSSQLDB`** objects created in my cluster are actually created as databases in the SQL Server instance. If they are not, it will try to recreate them.
 
 ### Start your engines!
 
