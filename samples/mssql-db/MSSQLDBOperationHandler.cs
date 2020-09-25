@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,9 +20,9 @@ namespace mssql_db
 
 		SqlConnection GetDBConnection(Kubernetes k8s, MSSQLDB db)
 		{
-			var configMap = k8s.ReadNamespacedConfigMap(db.Spec.Config, db.Namespace());
+			var configMap = k8s.ReadNamespacedConfigMap(db.Spec.ConfigMap, db.Namespace());
 			string instance = configMap.Data["instance"];
-			var secret = k8s.ReadNamespacedSecret(db.Spec.Data, db.Namespace());
+			var secret = k8s.ReadNamespacedSecret(db.Spec.Credentials, db.Namespace());
 			string dbUser = ASCIIEncoding.UTF8.GetString(secret.Data["userid"]);
 			string password = ASCIIEncoding.UTF8.GetString(secret.Data["password"]);
 
@@ -132,8 +133,9 @@ namespace mssql_db
 				{
 					lock (m_currentState)
 					{
-						foreach (MSSQLDB db in m_currentState.Values)
+						foreach (string key in m_currentState.Keys.ToList())
 						{
+							MSSQLDB db = m_currentState[key];
 							using (SqlConnection connection = GetDBConnection(k8s, db))
 							{
 								connection.Open();

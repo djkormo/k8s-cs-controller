@@ -163,19 +163,20 @@ Here you can see that I first create the handler and pass it over to the control
 Start your console application and see what happens.
 
 ```
-Press <enter> to quit...
-mssql_db.MSSQLDB db1 Added on Namespace default
-DATABASE MyFirstDB will be ADDED
-DATABASE MyFirstDB successfully created!
-mssql_db.MSSQLDB db1 Deleted on Namespace default
-DATABASE MyFirstDB will be DELETED!
-DATABASE MyFirstDB successfully deleted!
-mssql_db.MSSQLDB db1 Added on Namespace default
-DATABASE MyFirstDB will be ADDED
-DATABASE MyFirstDB successfully created!
-Database MyFirstDB was not found!
-DATABASE MyFirstDB will be ADDED
-DATABASE MyFirstDB successfully created!
+2020-09-25 16:38:59.3787 [INFO] mssql_db.MSSQLController:=== MSSQLController STARTING for namespace default ===
+2020-09-25 16:39:00.0742 [INFO] mssql_db.MSSQLController:=== MSSQLController STARTED ===
+2020-09-25 16:39:04.2110 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Added on Namespace default
+2020-09-25 16:39:04.2110 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
+2020-09-25 16:39:06.0844 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
+2020-09-25 16:39:17.3452 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Deleted on Namespace default
+2020-09-25 16:39:17.3452 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be DELETED!
+2020-09-25 16:39:17.4273 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully deleted!
+2020-09-25 16:39:20.8342 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Added on Namespace default
+2020-09-25 16:39:20.8342 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
+2020-09-25 16:39:21.6988 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
+2020-09-25 16:39:31.7603 [WARN] mssql_db.MSSQLDBOperationHandler:Database MyFirstDB was not found!
+2020-09-25 16:39:31.7603 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
+2020-09-25 16:39:32.3805 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
 ```
 
 Here's the log of the execution. The first thing I did was created the first db (all these yaml files are in the [yaml](./yaml) folder)

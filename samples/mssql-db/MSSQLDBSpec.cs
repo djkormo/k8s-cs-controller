@@ -4,13 +4,13 @@
 	{
 		public string DBName { get; set; }
 
-		public string Config { get; set; }
+		public string ConfigMap { get; set; }
 
-		public string Data { get; set; }
+		public string Credentials { get; set; }
 
 		public override string ToString()
 		{
-			return $"{DBName}:{Config}:{Data}"; 
+			return $"{DBName}:{ConfigMap}:{Credentials}"; 
 		}
 	}
 }
