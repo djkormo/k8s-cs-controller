@@ -110,7 +110,7 @@ namespace mssql_db
 				try
 				{
 					RenameDB(k8s, currentDb, crd);
-					Log.Info($"Database sucessfully renames from {currentDb.Spec.DBName} to {crd.Spec.DBName}");
+					Log.Info($"Database sucessfully renamed from {currentDb.Spec.DBName} to {crd.Spec.DBName}");
 					m_currentState[crd.Name()] = crd;
 				}
 				catch (Exception ex)
@@ -180,7 +180,7 @@ namespace mssql_db
 					if (sex.Number == 1801) //Database already exists
 					{
 						Log.Warn(sex.Message);
-						m_currentState.Add(db.Name(), db);
+						m_currentState[db.Name()] = db;
 						return;
 					}
 
@@ -193,7 +193,7 @@ namespace mssql_db
 					return;
 				}
 
-				m_currentState.Add(db.Name(), db);
+				m_currentState[db.Name()] = db;
 				Log.Info($"DATABASE {db.Spec.DBName} successfully created!");
 			}
 		}
