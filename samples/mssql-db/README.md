@@ -3,7 +3,7 @@
 
 ### Definition
 
-This is a controller for a newly defined CustomResourceDefinition that lets you create or delete (drop) databases from s SQL Server pod running in your Kubernetes cluster.
+This is a controller for a newly defined `CustomResourceDefinition` (CRD) that lets you create or delete (drop) databases from a Microsoft SQL Server `Pod` running in your Kubernetes cluster.
 
 ```yaml
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -37,15 +37,15 @@ spec:
           required: ["dbname","configmap", "credentials"]
 ```
 
-This CRD has three properties, `dbname`, `configmap`, and `credentials`. All three of them are strings, but they all have different semantics.  
+This `CRD` has three properties, `dbname`, `configmap`, and `credentials`. All three of them are strings, but they all have different semantics.  
 
 - `dbname` holds the name of the Database that will be added/delete to the SQL Server instance.
-- `configmap` is the name of a [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) with a property called `instance`. That's where the name of the [Service](https://kubernetes.io/docs/concepts/services-networking/service/) related to the SQL Server pod is listening.
-- `credentials` is also an indirection, but in this case to a [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that holds both the user (`userid`) and password (`password`) to the SQL Server instance.
+- `configmap` is the name of a [`ConfigMap`](https://kubernetes.io/docs/concepts/configuration/configmap/) with a property called `instance`. That's where the name of the [`Service`](https://kubernetes.io/docs/concepts/services-networking/service/) related to the SQL Server pod is listening.
+- `credentials` is also an indirection, but in this case to a [`Secret`](https://kubernetes.io/docs/concepts/configuration/secret/) that holds both the user (`userid`) and password (`password`) to the SQL Server instance.
 
 As you can see, these are mandatory for the controller to successfully communicate to the SQL Server instance.
 
-So, a typical yaml for my new Custom Resource will lool like this
+So, a typical yaml for my new resource, called `MSSQLDB`, will lool like this
 
 ```yaml
 apiVersion: "samples.k8s-cs-controller/v1"
@@ -58,20 +58,22 @@ spec:
   credentials: mssql-data 
 ```
 
-This yaml will create (or delete) an object of kind MSSQLDB, named db1 with the properties mentioned above. In this case, a ConfigMap called `mssql-config` and a Secret called `mssql-data` must exist.
+This yaml will create (or delete) an object of kind `MSSQLDB`, named db1 with the properties mentioned above. In this case, a `ConfigMap` called `mssql-config` and a `Secret` called `mssql-data` must exist.
 
 ### Implementation
 
-If we first apply the first file (CustomResourceDefinition) and we then apply the second one, we'll see that Kubernetes successfully creates the object.
+If we first apply the first file ([`CustomResourceDefinition`](./yaml/mssql-crd.yaml)) and we then apply the second one ([db1.yaml](./yaml/db1.yaml)), we'll see that Kubernetes successfully creates the object.
 
-> kubectl apply -f .\db1.yaml  
-> mssqldb.samples.k8s-cs-controller/db1 created
+```bash
+kubectl apply -f .\db1.yaml  
+mssqldb.samples.k8s-cs-controller/db1 created
+```
 
 But nothing actually happens other than the API-Server saving the data in the cluster's etcd database. We need to do something that "listens" for our newly created definition and eventually would create or delete databases.
 
 #### Base class
 
-We need to create a class that represents our definition. For that purpose, the SDK provides a class called `BaseCRD` which is where your class will inherit from. Also, you must create a spec class that will hold the properties defined in your Custom Resource. In my case, this is what they look like.
+We need to create a class that represents our definition. For that purpose, the SDK provides a class called `BaseCRD` which is where your class will inherit from. Also, you must create a spec class that will hold the properties defined in your custom resource. In my case, this is what they look like.
 
 ```cs
 public class MSSQLDB : BaseCRD
@@ -93,9 +95,9 @@ public class MSSQLDBSpec
 }
 ```
 
-Keep in mind the strings you must pass over the base class' constructor. These are the same values defined in the CustomeResourceDefinition file.
+Keep in mind the strings you must pass over the base class' constructor. These are the same values defined in the `CustomeResourceDefinition` file.
 
-Then you need to create the class that will be actually creating or deleting the databases. For this purpose, create a class that implements the IOperationHAndler<T>, where T is your implementation of the `BaseCRD`,  in my case `MSSQLDB`.
+Then you need to create the class that will be actually creating or deleting the databases. For this purpose, create a class that implements the `IOperationHAndler<T>`, where `T` is your implementation of the `BaseCRD`,  in my case `MSSQLDB`.
 
 ```cs
 public interface IOperationHandler<T> where T : BaseCRD
@@ -113,9 +115,9 @@ public interface IOperationHandler<T> where T : BaseCRD
 	Task CheckCurrentState(Kubernetes k8s);
 }
 ```
-The implementation is pretty straight forward, you need to implement the *OnAction* methods. These methods are the ones that will communicate with the SQL Server instance and will create or delete the databases. So whenever somebody uses `kubectl` to create, apply or delete an object, these methods will be called.
+The implementation is pretty straight forward, you need to implement the **`OnAction`** methods. These methods are the ones that will communicate with the SQL Server instance and will create or delete the databases. So whenever somebody uses `kubectl` to create, apply or delete an object, these methods will be called.
 
-But what happens if somebody or something connects to your SQL Server instance and deletes the databases? Here's where the `CheckCurrentState` method comes into play. This method, in my case, is checking every 5 seconds if the MSSQLDB objects created in my cluster are actually created as databases in the SQL Server instance. If they are not, it will try to recreate them.
+But what happens if somebody or something connects to your SQL Server instance and deletes the databases? Here's where the **`CheckCurrentState`** method comes into play. This method, in my case, is checking every 5 seconds if the MSSQLDB objects created in my cluster are actually created as databases in the SQL Server instance. If they are not, it will try to recreate them.
 
 ### Start your engines!
 
@@ -156,7 +158,7 @@ static void Main(string[] args)
 	}
 }
 ```
-Here you can see that I first create the handler and pass it over to the controller instance. This `Controller` is given by the SDK and it's the one checking on the objects created by the kubernetes-apiserver. I then start the controller, the handler for the current state, and that's it!.
+Here you can see that I first create the handler and pass it over to the controller instance. This **`Controller`** is given by the SDK and it's the one checking on the objects created by the kubernetes-apiserver. I then start the controller, the handler for the current state, and that's it!.
 
 ### Take it for a spin
 
