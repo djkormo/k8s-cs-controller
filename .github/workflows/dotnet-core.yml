@@ -34,6 +34,4 @@ jobs:
       run: dotnet restore $solutionFile
     - name: Build
       run: dotnet build --configuration $config --no-restore $solutionFile
-    - name: Package
-      run: dotnet pack --configuration $config --no-build --output ./bin $solutionFile
  
