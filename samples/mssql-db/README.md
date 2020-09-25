@@ -30,18 +30,18 @@ spec:
           properties:
             dbname:
               type: string
-            config:
+            configmap:
               type: string
             data:
-              type: string
-          required: ["dbname","config", "data"]
+              credentials: string
+          required: ["dbname","configmap", "credentials"]
 ```
 
-This CRD has three properties, `dbname`, `config`, and `data`. All three of them are strings, but they all have different semantics.  
+This CRD has three properties, `dbname`, `configmap`, and `credentials`. All three of them are strings, but they all have different semantics.  
 
 - `dbname` holds the name of the Database that will be added/delete to the SQL Server instance.
-- `config` is the name of a [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) with a property called `instance`. That's where the name of the [Service](https://kubernetes.io/docs/concepts/services-networking/service/) related to the SQL Server pod is listening.
-- `data` is also an indirection, but in this case to a [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that holds both the user (`userid`) and password (`password`) to the SQL Server instance.
+- `configmap` is the name of a [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) with a property called `instance`. That's where the name of the [Service](https://kubernetes.io/docs/concepts/services-networking/service/) related to the SQL Server pod is listening.
+- `credentials` is also an indirection, but in this case to a [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that holds both the user (`userid`) and password (`password`) to the SQL Server instance.
 
 As you can see, these are mandatory for the controller to successfully communicate to the SQL Server instance.
 
@@ -54,8 +54,8 @@ metadata:
   name: db1
 spec:
   dbname: MyFirstDB
-  config: mssql-config
-  data: mssql-data 
+  configmap: mssql-config
+  credentials: mssql-data 
 ```
 
 This yaml will create (or delete) an object of kind MSSQLDB, named db1 with the properties mentioned above. In this case, a ConfigMap called `mssql-config` and a Secret called `mssql-data` must exist.
@@ -87,9 +87,9 @@ public class MSSQLDBSpec
 {
 	public string DBName { get; set; }
 
-	public string Config { get; set; }
+	public string ConfigMap { get; set; }
 
-	public string Data { get; set; }
+	public string Credentials { get; set; }
 }
 ```
 
@@ -199,3 +199,6 @@ Spin a pod with the following command
 
 `kubectl run mssqldb --image=sebagomez/k8s-mssqldb`
 
+There's also a Deployment script wich spins a pod of this controller. 
+
+`kubectl apply -f .\controller-deployment.yaml`
