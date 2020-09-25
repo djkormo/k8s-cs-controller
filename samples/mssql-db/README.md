@@ -162,7 +162,7 @@ Here you can see that I first create the handler and pass it over to the control
 
 Start your console application and see what happens.
 
-```
+```log
 2020-09-25 16:38:59.3787 [INFO] mssql_db.MSSQLController:=== MSSQLController STARTING for namespace default ===
 2020-09-25 16:39:00.0742 [INFO] mssql_db.MSSQLController:=== MSSQLController STARTED ===
 2020-09-25 16:39:04.2110 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Added on Namespace default
