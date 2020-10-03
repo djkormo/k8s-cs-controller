@@ -5,4 +5,4 @@ metadata:
 spec:
   dbname: MyFirstDB
   configmap: mssql-config
-  credentials: mssql-data 
+  credentials: mssql-credentials

@@ -55,10 +55,10 @@ metadata:
 spec:
   dbname: MyFirstDB
   configmap: mssql-config
-  credentials: mssql-data 
+  credentials: mssql-credentials 
 ```
 
-This yaml will create (or delete) an object of kind `MSSQLDB`, named db1 with the properties mentioned above. In this case, a `ConfigMap` called `mssql-config` and a `Secret` called `mssql-data` must exist.
+This yaml will create (or delete) an object of kind `MSSQLDB`, named db1 with the properties mentioned above. In this case, a `ConfigMap` called `mssql-config` and a `Secret` called `mssql-credentials` must exist.
 
 ### Implementation
 
@@ -197,10 +197,34 @@ Also, in the log shown above, you'll notice some messages seem to have the same 
 
 This msqldb controller is also available as a Docker image in my personal Docker Hub repository under [sebagomez/k8s-mssqldb](https://hub.docker.com/repository/docker/sebagomez/k8s-mssqldb). 
 
-Spin a pod with the following command
+In the [yaml](./samples/msssql-db/yaml) folder there are a few files that can be used to try the controller.
 
-`kubectl run mssqldb --image=sebagomez/k8s-mssqldb`
+File|Description
+---|---
+[deployment.yaml](./samples/msssql-db/yaml/deployment.yaml)|Sets up a `Pod` with an instance of MS SQL Server, a `Service` to access the `Pod` and the `ConfigMap` and `Secret` needed to access the SQL Server instance.
+[mssql-crd.yaml](./samples/msssql-db/yaml/mssql-crd.yaml)|The `CustomResourceDefinition` for this new resource called `MSSQLDB`.
+[controller-deployment.yaml](./samples/msssql-db/yaml/controller-deployment.yaml)|Spins up a `Pod` with the controller itself.
+[db1.yaml](./samples/msssql-db/yaml/db1.yaml)|A sample MSSQLDB that creates a database called 'MyFirstDB'
 
-There's also a Deployment script wich spins a pod of this controller. 
+Apply those scripts in the order described above. Also, you can play around renaming the SQL Database instance modifiyng `dbname` value of the `db1.yaml` file.
 
-`kubectl apply -f .\controller-deployment.yaml`
+But, is it working?
+
+I've added a little script at [sqlcmd.sh](./samples/msssql-db/yaml/sqlcmd.sh) that will spin a `Pod` with the SqlCmd utility.  
+Once you run the script you can connect to your SQL Server instance with running the following command
+
+> `sqlcmd -S mssql-service -U sa -P MyNotSoSecuredPa55word!`
+
+Once connected, you can check the existent databases like this
+
+> `select name from sys.databases;`
+> `go`
+
+Want to make interesting? Drop the database created by Kubernetes and see what happens
+
+> `drop database MyFirstDB;`
+> `go`
+
+If you're fast enough, you will see that the database is gone. But after a few seconds (5 max) the database is once again created. This is because the reconciliation loop realized that the actual state of the cluster is not consistent with the desired state, so it will try to change that.
+
+Have fun with ut and let me know what you think.

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: msssql-deployment
+  name: mssql-deployment
   labels:
-    app: msssql
+    app: mssql
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: msssql
+      app: mssql
   template:
     metadata:
       labels:
-        app: msssql
+        app: mssql
     spec:
       containers:
-      - name: msssql
+      - name: mssql
         image: mcr.microsoft.com/mssql/server:2019-latest
         ports:
         - containerPort: 1433
@@ -25,7 +25,7 @@ spec:
         - name: SA_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mssql-data
+              name: mssql-credentials
               key: password
 ---
 apiVersion: v1
@@ -35,7 +35,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: msssql
+    app: mssql
   ports:
     - protocol: TCP
       port: 1433
@@ -44,7 +44,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mssql-data
+  name: mssql-credentials
 data:
   userid: c2E=
   password: TXlOb3RTb1NlY3VyZWRQYTU1d29yZCE=
@@ -54,5 +54,5 @@ kind: ConfigMap
 metadata:
   name: mssql-config
 data:
-#  instance: mssql-service
-  instance: localhost,31786
+  instance: mssql-service
+#  instance: localhost,30175
