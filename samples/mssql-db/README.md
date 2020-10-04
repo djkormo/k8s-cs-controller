@@ -140,8 +140,7 @@ static void Main(string[] args)
 
 		MSSQLDBOperationHandler handler = new MSSQLDBOperationHandler();
 		Controller<MSSQLDB> controller = new Controller<MSSQLDB>(new MSSQLDB(), handler);
-		controller.SatrtAsync(k8sNamespace);
-		Task reconciliation = handler.CheckCurrentState(controller.Kubernetes);
+		Task reconciliation = controller.SatrtAsync(k8sNamespace);
 
 		Log.Info($"=== {nameof(MSSQLController)} STARTED ===");
 
@@ -165,20 +164,21 @@ Here you can see that I first create the handler and pass it over to the control
 Start your console application and see what happens.
 
 ```log
-2020-09-25 16:38:59.3787 [INFO] mssql_db.MSSQLController:=== MSSQLController STARTING for namespace default ===
-2020-09-25 16:39:00.0742 [INFO] mssql_db.MSSQLController:=== MSSQLController STARTED ===
-2020-09-25 16:39:04.2110 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Added on Namespace default
-2020-09-25 16:39:04.2110 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
-2020-09-25 16:39:06.0844 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
-2020-09-25 16:39:17.3452 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Deleted on Namespace default
-2020-09-25 16:39:17.3452 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be DELETED!
-2020-09-25 16:39:17.4273 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully deleted!
-2020-09-25 16:39:20.8342 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Added on Namespace default
-2020-09-25 16:39:20.8342 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
-2020-09-25 16:39:21.6988 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
-2020-09-25 16:39:31.7603 [WARN] mssql_db.MSSQLDBOperationHandler:Database MyFirstDB was not found!
-2020-09-25 16:39:31.7603 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
-2020-09-25 16:39:32.3805 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
+2020-10-04 12:26:22.2833 [INFO] mssql_db.MSSQLController:=== MSSQLController STARTING for namespace default ===
+2020-10-04 12:26:23.0727 [INFO] mssql_db.MSSQLController:=== MSSQLController STARTED ===
+2020-10-04 12:26:29.5139 [INFO] K8sControllerSDK.Controller`1:Reconciliation Loop for CRD mssqldb will run every 5 seconds.
+2020-10-04 12:26:29.5954 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Added on Namespace default
+2020-10-04 12:26:29.6158 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
+2020-10-04 12:26:30.4513 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
+2020-10-04 12:26:39.6329 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Deleted on Namespace default
+2020-10-04 12:26:39.6339 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be DELETED!
+2020-10-04 12:26:39.7343 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully deleted!
+2020-10-04 12:26:45.7297 [INFO] K8sControllerSDK.Controller`1:mssql_db.MSSQLDB db1 Added on Namespace default
+2020-10-04 12:26:45.7297 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
+2020-10-04 12:26:47.0061 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
+2020-10-04 12:26:59.7036 [WARN] mssql_db.MSSQLDBOperationHandler:Database MyFirstDB was not found!
+2020-10-04 12:26:59.7036 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB will be ADDED
+2020-10-04 12:27:01.3013 [INFO] mssql_db.MSSQLDBOperationHandler:DATABASE MyFirstDB successfully created!
 ```
 
 Here's the log of the execution. The first thing I did was created the first db (all these yaml files are in the [yaml](./yaml) folder)
@@ -213,18 +213,23 @@ But, is it working?
 I've added a little script at [sqlcmd.sh](./samples/msssql-db/yaml/sqlcmd.sh) that will spin a `Pod` with the SqlCmd utility.  
 Once you run the script you can connect to your SQL Server instance with running the following command
 
-> `sqlcmd -S mssql-service -U sa -P MyNotSoSecuredPa55word!`
+`sqlcmd -S mssql-service -U sa -P MyNotSoSecuredPa55word!`
+
 
 Once connected, you can check the existent databases like this
 
-> `select name from sys.databases;`
-> `go`
+```sql
+select name from sys.databases;
+go
+```
 
 Want to make interesting? Drop the database created by Kubernetes and see what happens
 
-> `drop database MyFirstDB;`
-> `go`
+```sql
+drop database MyFirstDB;
+go
+``` 
 
 If you're fast enough, you will see that the database is gone. But after a few seconds (5 max) the database is once again created. This is because the reconciliation loop realized that the actual state of the cluster is not consistent with the desired state, so it will try to change that.
 
-Have fun with ut and let me know what you think.
+Have fun with it and let me know what you think.

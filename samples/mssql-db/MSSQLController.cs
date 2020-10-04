@@ -23,8 +23,7 @@ namespace mssql_db
 
 				MSSQLDBOperationHandler handler = new MSSQLDBOperationHandler();
 				Controller<MSSQLDB> controller = new Controller<MSSQLDB>(new MSSQLDB(), handler);
-				controller.SatrtAsync(k8sNamespace);
-				Task reconciliation = handler.CheckCurrentState(controller.Kubernetes);
+				Task reconciliation = controller.SatrtAsync(k8sNamespace);
 
 				Log.Info($"=== {nameof(MSSQLController)} STARTED ===");
 
